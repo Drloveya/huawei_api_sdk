@@ -18,8 +18,8 @@ else:
 
 
 class HttpRequest:
-    def __init__(self, API_URI, method="", uri="", headers=None, body=""):
-        url = API_URI + uri
+    def __init__(self, method="", uri="", headers=None, body=""):
+        url = uri
         self.method = method
         spl = url.split("://", 1)
         scheme = 'http'
