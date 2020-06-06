@@ -68,16 +68,25 @@ class HttpRequest:
 华为云API请求签名计算
 无需改动，除非华为云改变签名规则
 """
+if sys.version_info.major < 3:
 
+    def hmacsha256(keyByte, message):
+        return hmac.new(keyByte, message, digestmod=hashlib.sha256).digest()
 
-def hmacsha256(keyByte, message):
-    return hmac.new(keyByte, message, digestmod=hashlib.sha256).digest()
+    # Create a "String to Sign".
+    def StringToSign(canonicalRequest, t):
+        bytes_string = HexEncodeSHA256Hash(canonicalRequest)
+        return "%s\n%s\n%s" % (Algorithm, datetime.strftime(t, BasicDateFormat), bytes_string)
 
+else:
 
-# Create a "String to Sign".
-def StringToSign(canonicalRequest, t):
-    bytes_string = HexEncodeSHA256Hash(canonicalRequest)
-    return "%s\n%s\n%s" % (Algorithm, datetime.strftime(t, BasicDateFormat), bytes_string)
+    def hmacsha256(keyByte, message):
+        return hmac.new(keyByte.encode('utf-8'), message.encode('utf-8'), digestmod=hashlib.sha256).digest()
+
+    # Create a "String to Sign".
+    def StringToSign(canonicalRequest, t):
+        bytes_string = HexEncodeSHA256Hash(canonicalRequest.encode('utf-8'))
+        return "%s\n%s\n%s" % (Algorithm, datetime.strftime(t, BasicDateFormat), bytes_string)
 
 
 def urlencode(s):
